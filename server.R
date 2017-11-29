@@ -3616,7 +3616,7 @@ shinyServer(function(input, output, session) {
             input$btnRefreshComponentsDiagnostics
             
             if(componentsMultiplexOK){
-                matComm <- matrix(nrow=LAYERS, ncol=Nodes, 0)
+                matComm <- Matrix::Matrix(nrow=LAYERS, ncol=Nodes, 0)
                 Layer <- NULL
                 for(l in 1:LAYERS) Layer = c(Layer,as.character(layerLabel[[l]]))
                 
