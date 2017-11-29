@@ -24,7 +24,7 @@ library(d3Network)
 library(session)
 library(d3heatmap)
 library(networkD3)
-library(dplyr)
+library(dplyr) ; library(Matrix)
 
 
 source("version.R")
