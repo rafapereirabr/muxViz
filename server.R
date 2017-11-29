@@ -46,6 +46,10 @@ textInputRow <- function (inputId, label, value = "", width=NULL) {
         tags$input(id = inputId, type = "text", value = value,class="input-small", width=width))
 }
 
+as.data.frame.sp <- function(A){
+  #A is expected to be a sparse matrix
+  return(data.frame(summary(A)))
+}
 
 
 shinyServer(function(input, output, session) {
@@ -2489,7 +2493,7 @@ shinyServer(function(input, output, session) {
         
                     avgGlobalOverlappingMatrix <<- GetAverageGlobalOverlappingMatrix(SupraAdjacencyMatrix,LAYERS,Nodes)
 
-                    avgGlobalOverlappingMatrix.df <<- as.data.frame(t(Matrix::Matrix(avgGlobalOverlappingMatrix, sparse=T)))
+                    avgGlobalOverlappingMatrix.df <<- as.data.frame.sp(t(Matrix::Matrix(avgGlobalOverlappingMatrix, sparse=T)))
                     colnames(avgGlobalOverlappingMatrix.df) <<- Layer
                     rownames(avgGlobalOverlappingMatrix.df) <<- Layer
 
@@ -2508,7 +2512,7 @@ shinyServer(function(input, output, session) {
                     avgGlobalNodeOverlappingMatrix <<- GetAverageGlobalNodeOverlappingMatrix(SupraAdjacencyMatrix,LAYERS,Nodes)
     
 
-                    avgGlobalNodeOverlappingMatrix.df <<- as.data.frame(t(Matrix::Matrix(avgGlobalNodeOverlappingMatrix, sparse = T)))
+                    avgGlobalNodeOverlappingMatrix.df <<- as.data.frame.sp(t(Matrix::Matrix(avgGlobalNodeOverlappingMatrix, sparse = T)))
                     colnames(avgGlobalNodeOverlappingMatrix.df) <<- Layer
                     rownames(avgGlobalNodeOverlappingMatrix.df) <<- Layer
     
@@ -2527,7 +2531,7 @@ shinyServer(function(input, output, session) {
                     interPearson <- GetInterAssortativityTensor(SupraAdjacencyMatrix,LAYERS,Nodes,
                                                                                         DIRECTED,input$selAssortativityType)$InterPearson
     
-                    interPearson.df <<- as.data.frame(t(Matrix::Matrix(interPearson, sparse = T)))
+                    interPearson.df <<- as.data.frame.sp(t(Matrix::Matrix(interPearson, sparse = T)))
                     colnames(interPearson.df) <<- Layer
                     rownames(interPearson.df) <<- Layer
     
@@ -2547,7 +2551,7 @@ shinyServer(function(input, output, session) {
                     interSpearman <- GetInterAssortativityTensor(SupraAdjacencyMatrix,LAYERS,Nodes,
                                                                                     DIRECTED,input$selAssortativityType)$InterSpearman
     
-                    interSpearman.df <<- as.data.frame(t(Matrix::Matrix(interSpearman, sparse = T)))
+                    interSpearman.df <<- as.data.frame.sp(t(Matrix::Matrix(interSpearman, sparse = T)))
                     colnames(interSpearman.df) <<- Layer
                     rownames(interSpearman.df) <<- Layer
                     
@@ -3228,7 +3232,7 @@ shinyServer(function(input, output, session) {
                 #rgb.palette <- colorRampPalette(brewer.pal(brewer.pal.info$maxcolors[row.names(brewer.pal.info)==input$selCommunityColorPalette],input$selCommunityColorPalette))(max(matComm))
                 #rgb.palette <- c("white", rgb.palette)
 
-                matComm.df <- as.data.frame(t(matComm))
+                matComm.df <- as.data.frame.sp(t(matComm))
                 colnames(matComm.df) <- Layer
                 
 
@@ -3396,7 +3400,7 @@ shinyServer(function(input, output, session) {
                 #rgb.palette <- colorRampPalette(brewer.pal(brewer.pal.info$maxcolors[row.names(brewer.pal.info)==input$selCommunityColorPalette],input$selCommunityColorPalette))(max(matComm))
                 #rgb.palette <- c("white", rgb.palette)
 
-                matComm.df <- as.data.frame(t(matComm))
+                matComm.df <- as.data.frame.sp(t(matComm))
                 colnames(matComm.df) <- Layer
 
                 output$communityHeatmapSingleLayerUI <- renderUI({
@@ -3620,7 +3624,7 @@ shinyServer(function(input, output, session) {
                     matComm[l,] <- listComponents[[l]]$Component
                 }
                 
-                matComm.df <- as.data.frame(t(matComm))
+                matComm.df <- as.data.frame.sp(t(matComm))
                 colnames(matComm.df) <- Layer
 
                 output$componentsHeatmapUI <- renderUI({
@@ -3713,7 +3717,7 @@ shinyServer(function(input, output, session) {
                     matComm[l,] <- listComponentsSingleLayer[[l]]$Component
                 }
                 
-                matComm.df <- as.data.frame(t(matComm))
+                matComm.df <- as.data.frame.sp(t(matComm))
                 colnames(matComm.df) <- Layer
 
                 output$componentsHeatmapSingleLayerUI <- renderUI({
@@ -3937,7 +3941,7 @@ shinyServer(function(input, output, session) {
                     matTriads[l,] <- listTriads[[l]]$Transitivity
                 }
                 
-                matTriads.df <- as.data.frame(t(matTriads))
+                matTriads.df <- as.data.frame.sp(t(matTriads))
                 colnames(matTriads.df) <- Layer
 
                 output$triadsHeatmapUI <- renderUI({
@@ -4036,7 +4040,7 @@ shinyServer(function(input, output, session) {
                     matTriads[l,] <- listTriadsSingleLayer[[l]]$Transitivity
                 }
                 
-                matTriads.df <- as.data.frame(t(matTriads))
+                matTriads.df <- as.data.frame.sp(t(matTriads))
                 colnames(matTriads.df) <- Layer
 
                 output$triadsHeatmapSingleLayerUI <- renderUI({
@@ -5198,7 +5202,7 @@ shinyServer(function(input, output, session) {
                 
             colnames(distanceMatrix) <- Layer
             rownames(distanceMatrix) <- Layer
-            distanceMatrix.df <- as.data.frame(Matrix::Matrix(distanceMatrix, sparse = T))
+            distanceMatrix.df <- as.data.frame.sp(Matrix::Matrix(distanceMatrix, sparse = T))
                 
             d3heatmap(
                 distanceMatrix.df,
