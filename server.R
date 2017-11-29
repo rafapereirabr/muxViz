@@ -652,7 +652,7 @@ shinyServer(function(input, output, session) {
                         return(NULL)
                     }                    
 
-                    layer.info <- read.table(layer.info.file, header=T, sep=as.character(input$txtEdgeListFileSep))
+                    layer.info <- data.table::fread(layer.info.file, header=T, sep=as.character(input$txtEdgeListFileSep))
                     LAYERS <<- nrow(layer.info)
                 }
                 
@@ -690,7 +690,7 @@ shinyServer(function(input, output, session) {
                         }                    
                         
                         print(paste("file",fileName[[l]][1]))
-                        layerEdges[[l]] <<-  read.table(fileName[[l]][1], header=input$chkEdgeListFileHeader, sep=as.character(input$txtEdgeListFileSep))
+                        layerEdges[[l]] <<-  data.table::fread(fileName[[l]][1], header=input$chkEdgeListFileHeader, sep=as.character(input$txtEdgeListFileSep))
                         print("  Edges list imported...")
 
                         if(ncol(layerEdges[[l]])==2){ 
@@ -716,7 +716,7 @@ shinyServer(function(input, output, session) {
                                     nodeLabelSeqIdConvTable <<- convTable
                                     for(i in 1:2) layerEdges[[l]][,i] <<- convTable[ as.character(unlist(layerEdges[[l]][,i])) ]
                                     
-                                    write.table(layerEdges[[l]], paste(fileName[[l]][1],".rel",sep=""), quote=F, row.names=F, col.names=F)
+                                    data.table::fwrite(layerEdges[[l]], paste(fileName[[l]][1],".rel",sep=""), quote=F, row.names=F, col.names=F)
                                     
                                     print("  Done!")
                                 }else{
@@ -771,7 +771,7 @@ shinyServer(function(input, output, session) {
                     }
 
                     layer.info.file <- strsplit(fileInput[1],';')[[1]][2]
-                    layer.info <- read.table(layer.info.file, header=T, sep=as.character(input$txtEdgeListFileSep))
+                    layer.info <- data.table::fread(layer.info.file, header=T, sep=as.character(input$txtEdgeListFileSep))
                     multilayerEdges <<- read.table(fileName[[1]][1], header=input$chkEdgeListFileHeader, sep=as.character(input$txtEdgeListFileSep))
      
                     if(ncol(multilayerEdges)==4){ 
@@ -826,12 +826,12 @@ shinyServer(function(input, output, session) {
                                                 multilayerEdges[,2] <<- as.numeric(multilayerEdges[,2])
                                                 multilayerEdges[,4] <<- as.numeric(multilayerEdges[,4])
                                             }                                                                                        
-                                            write.table(multilayerEdges, paste0(fileName[[l]][1],".rel"), quote=F, row.names=F, col.names=F)
+                                            data.table::fwrite(multilayerEdges, paste0(fileName[[l]][1],".rel"), quote=F, row.names=F, col.names=F)
                                             #print(multilayerEdges)
                                         }                                        
                                         
                                         layerEdges[[l]] <<- multilayerEdges[ multilayerEdges[,2]==l & multilayerEdges[,4]==l, c(1,3,5)]                                        
-                                        write.table(layerEdges[[l]], paste0(fileName[[l]][1],"_layer",l,".rel"), quote=F, row.names=F, col.names=F)
+                                        data.table::fwrite(layerEdges[[l]], paste0(fileName[[l]][1],"_layer",l,".rel"), quote=F, row.names=F, col.names=F)
                                        # print(paste("Edge list for layer",l))
                                         #print(layerEdges[[l]])
                                         print("  Done!")
@@ -1777,7 +1777,7 @@ shinyServer(function(input, output, session) {
             }
 
             fileTimeline <<- input$timeline_file$datapath
-            dfTimeline <<-  read.table(fileTimeline, header=TRUE, sep=as.character(input$txtTimelineFileSep))
+            dfTimeline <<-  data.table::fread(fileTimeline, header=TRUE, sep=as.character(input$txtTimelineFileSep))
             
             if(!(all(as.integer(as.character(dfTimeline$layerID)) >= 1) & all(as.integer(as.character(dfTimeline$layerID)) <= (LAYERS+1)))){
                 progress <- shiny::Progress$new(session)
