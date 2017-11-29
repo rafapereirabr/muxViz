@@ -619,7 +619,7 @@ shinyServer(function(input, output, session) {
                     Sys.sleep(10)
                     return(NULL)
                 }
-                fileInput <<- readLines(input$project_file$datapath)
+                fileInput <<- data.table::fread(input$project_file$datapath, sep= "?", header = FALSE)[[1L]] # readLines(input$project_file$datapath)
 
                 LAYERS <<- 0
 
