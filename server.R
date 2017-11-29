@@ -1624,43 +1624,43 @@ shinyServer(function(input, output, session) {
 
             #build heatmaps for matrix explorer
             
-            #multilayer
-            mux.df <- mux.df <- as.data.frame.sp(t(SupraAdjacencyMatrix))
-            colnames(mux.df) <- paste0(sort(rep(1:LAYERS, Nodes)), "-", rep(nodesLabel[[1]], LAYERS))
-            rownames(mux.df) <- paste0(sort(rep(1:LAYERS, Nodes)), "-", rep(nodesLabel[[1]], LAYERS))
-
-            output$matrixExplorerHeatmapMultilayerUI <- renderUI({
-                d3heatmapOutput("matrixExplorerMultilayerHeatmap", width = "700", height="700")
-            })
-            
-            output$matrixExplorerMultilayerHeatmap <- renderD3heatmap({                    
-                if(input$chkShowMatrixExplorer){
-                    d3heatmap(
-                        mux.df,
-                        color = input$selMatrixEplorerHeatmapColorPalette,
-                        dendrogram = if (input$chkMatrixEplorerHeatmapShowDendrogram){"both"}else{"none"}
-                        )
-                }
-            })
-
-            #aggregate
-            agg.df <- as.data.frame.sp(t(AdjMatrix[[LAYERS+1]]))
-            colnames(agg.df) <- nodesLabel[[1]]
-            rownames(agg.df) <- nodesLabel[[1]]
-
-            output$matrixExplorerHeatmapAggregateUI <- renderUI({
-                d3heatmapOutput("matrixExplorerAggregateHeatmap", width = "700", height="700")
-            })
-
-            output$matrixExplorerAggregateHeatmap <- renderD3heatmap({                    
-                if(input$chkShowMatrixExplorer){
-                    d3heatmap(
-                        agg.df,
-                        color = input$selMatrixEplorerHeatmapColorPalette,
-                        dendrogram = if (input$chkMatrixEplorerHeatmapShowDendrogram){"both"}else{"none"}
-                        )
-                }
-            })
+            # #multilayer
+            # mux.df <- mux.df <- as.data.frame.sp(t(SupraAdjacencyMatrix))
+            # colnames(mux.df) <- paste0(sort(rep(1:LAYERS, Nodes)), "-", rep(nodesLabel[[1]], LAYERS))
+            # rownames(mux.df) <- paste0(sort(rep(1:LAYERS, Nodes)), "-", rep(nodesLabel[[1]], LAYERS))
+            # 
+            # output$matrixExplorerHeatmapMultilayerUI <- renderUI({
+            #     d3heatmapOutput("matrixExplorerMultilayerHeatmap", width = "700", height="700")
+            # })
+            # 
+            # output$matrixExplorerMultilayerHeatmap <- renderD3heatmap({                    
+            #     if(input$chkShowMatrixExplorer){
+            #         d3heatmap(
+            #             mux.df,
+            #             color = input$selMatrixEplorerHeatmapColorPalette,
+            #             dendrogram = if (input$chkMatrixEplorerHeatmapShowDendrogram){"both"}else{"none"}
+            #             )
+            #     }
+            # })
+            # 
+            # #aggregate
+            # agg.df <- as.data.frame.sp(t(AdjMatrix[[LAYERS+1]]))
+            # colnames(agg.df) <- nodesLabel[[1]]
+            # rownames(agg.df) <- nodesLabel[[1]]
+            # 
+            # output$matrixExplorerHeatmapAggregateUI <- renderUI({
+            #     d3heatmapOutput("matrixExplorerAggregateHeatmap", width = "700", height="700")
+            # })
+            # 
+            # output$matrixExplorerAggregateHeatmap <- renderD3heatmap({                    
+            #     if(input$chkShowMatrixExplorer){
+            #         d3heatmap(
+            #             agg.df,
+            #             color = input$selMatrixEplorerHeatmapColorPalette,
+            #             dendrogram = if (input$chkMatrixEplorerHeatmapShowDendrogram){"both"}else{"none"}
+            #             )
+            #     }
+            # })
 
             btnImportNetworksValue <<- input$btnImportNetworks
         }
