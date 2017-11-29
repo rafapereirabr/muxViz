@@ -1621,7 +1621,7 @@ shinyServer(function(input, output, session) {
             #build heatmaps for matrix explorer
             
             #multilayer
-            mux.df <- as.data.frame(t(Matrix::Matrix(SupraAdjacencyMatrix, sparse = T)))
+            mux.df <- mux.df <- as.data.frame.sp(t(SupraAdjacencyMatrix))
             colnames(mux.df) <- paste0(sort(rep(1:LAYERS, Nodes)), "-", rep(nodesLabel[[1]], LAYERS))
             rownames(mux.df) <- paste0(sort(rep(1:LAYERS, Nodes)), "-", rep(nodesLabel[[1]], LAYERS))
 
@@ -1640,7 +1640,7 @@ shinyServer(function(input, output, session) {
             })
 
             #aggregate
-            agg.df <- as.data.frame(t(Matrix::Matrix(AdjMatrix[[LAYERS+1]], sparse = T)))
+            agg.df <- as.data.frame.sp(t(AdjMatrix[[LAYERS+1]]))
             colnames(agg.df) <- nodesLabel[[1]]
             rownames(agg.df) <- nodesLabel[[1]]
 
