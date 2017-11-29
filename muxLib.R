@@ -308,8 +308,11 @@ GetLargestEigenv <- function(Matrix){
 }
 
 binarizeMatrix <- function(A){
-    return( Matrix::Matrix(as.numeric(A>0), dim(A)[1], dim(A)[2], sparse=T) )
+  #A is assumed to be sparse
+  A[which(A != 0)] <- 1
+  return( A )
 }
+
 
 
 CanonicalVector <- function(N, i){
