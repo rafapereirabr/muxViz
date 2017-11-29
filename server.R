@@ -652,7 +652,7 @@ shinyServer(function(input, output, session) {
                         return(NULL)
                     }                    
 
-                    layer.info <- data.table::fread(layer.info.file, header=T, sep=as.character(input$txtEdgeListFileSep))
+                    layer.info <- read.table(layer.info.file, header=T, sep=as.character(input$txtEdgeListFileSep))
                     LAYERS <<- nrow(layer.info)
                 }
                 
@@ -690,7 +690,7 @@ shinyServer(function(input, output, session) {
                         }                    
                         
                         print(paste("file",fileName[[l]][1]))
-                        layerEdges[[l]] <<-  data.table::fread(fileName[[l]][1], header=input$chkEdgeListFileHeader, sep=as.character(input$txtEdgeListFileSep))
+                        layerEdges[[l]] <<-  read.table(fileName[[l]][1], header=input$chkEdgeListFileHeader, sep=as.character(input$txtEdgeListFileSep))
                         print("  Edges list imported...")
 
                         if(ncol(layerEdges[[l]])==2){ 
@@ -708,7 +708,7 @@ shinyServer(function(input, output, session) {
                             print("  Input is label-based: converting to sequential integer IDs...")
                             
                             if(layerLayoutFile[[l]][1] !="" && (!is.na(layerLayoutFile[[l]][1])) && file.exists(layerLayoutFile[[l]][1])){
-                                layerTable <- data.table::fread(layerLayoutFile[[l]][1], header=T, sep=as.character(input$txtEdgeListFileSep))
+                                layerTable <- read.table(layerLayoutFile[[l]][1], header=T, sep=as.character(input$txtEdgeListFileSep))
     
                                 if("nodeLabel" %in% colnames(layerTable)){
                                     layerTable$nodeID <- 1:nrow(layerTable)
@@ -771,8 +771,8 @@ shinyServer(function(input, output, session) {
                     }
 
                     layer.info.file <- strsplit(fileInput[1],';')[[1]][2]
-                    layer.info <- data.table::fread(layer.info.file, header=T, sep=as.character(input$txtEdgeListFileSep))
-                    multilayerEdges <<- data.table::fread(fileName[[1]][1], header=input$chkEdgeListFileHeader, sep=as.character(input$txtEdgeListFileSep))
+                    layer.info <- read.table(layer.info.file, header=T, sep=as.character(input$txtEdgeListFileSep))
+                    multilayerEdges <<- read.table(fileName[[1]][1], header=input$chkEdgeListFileHeader, sep=as.character(input$txtEdgeListFileSep))
      
                     if(ncol(multilayerEdges)==4){ 
                         multilayerEdges$V5 <<- rep(1, nrow(multilayerEdges)) 
@@ -802,12 +802,12 @@ shinyServer(function(input, output, session) {
                             print("  Input is label-based: converting to sequential integer IDs...")
                             
                             if(layerLayoutFile[[l]][1] !="" && (!is.na(layerLayoutFile[[l]][1])) && file.exists(layerLayoutFile[[l]][1])){
-                                layerTable <- data.table::fread(layerLayoutFile[[l]][1], header=T, sep=as.character(input$txtEdgeListFileSep))
+                                layerTable <- read.table(layerLayoutFile[[l]][1], header=T, sep=as.character(input$txtEdgeListFileSep))
     
                                 if("nodeLabel" %in% colnames(layerTable)){
                                     if("layerLabel" %in% colnames(layer.info)){
                                         #convert nodes
-                                        layerTable <- data.table::fread(layerLayoutFile[[l]][1], header=T, sep=as.character(input$txtEdgeListFileSep))                                    
+                                        layerTable <- read.table(layerLayoutFile[[l]][1], header=T, sep=as.character(input$txtEdgeListFileSep))                                    
                                         layerTable$nodeID <- 1:nrow(layerTable)
                                         convTable = setNames(layerTable$nodeID, as.character(layerTable$nodeLabel))
 
@@ -983,7 +983,7 @@ shinyServer(function(input, output, session) {
                     #If each layout is specified correctly
                     for(l in 1:LAYERS){
                         if(layerLayoutFile[[l]][1] !="" && (!is.na(layerLayoutFile[[l]][1]))){
-                            layerTable <- data.table::fread(layerLayoutFile[[l]][1], header=T, sep=as.character(input$txtEdgeListFileSep))
+                            layerTable <- read.table(layerLayoutFile[[l]][1], header=T, sep=as.character(input$txtEdgeListFileSep))
                             if(input$chkEdgeListLabel) layerTable$nodeID <- 1:nrow(layerTable)
                             layerLayout[[l]] <<- matrix(c(1),nrow=Nodes,ncol=2)
                             
@@ -1053,7 +1053,7 @@ shinyServer(function(input, output, session) {
                     #just one layout file, let's fix l and work with that
                     l <- 1
                     if(layerLayoutFile[[l]][1] !="" && (!is.na(layerLayoutFile[[l]][1]))){
-                        layerTable <- data.table::fread(layerLayoutFile[[l]][1], header=T, sep=as.character(input$txtEdgeListFileSep))
+                        layerTable <- read.table(layerLayoutFile[[l]][1], header=T, sep=as.character(input$txtEdgeListFileSep))
                         if(input$chkEdgeListLabel) layerTable$nodeID <- 1:nrow(layerTable)
                             
                         layerLayout[[l]] <<- matrix(c(1),nrow=Nodes,ncol=2)
@@ -1777,7 +1777,7 @@ shinyServer(function(input, output, session) {
             }
 
             fileTimeline <<- input$timeline_file$datapath
-            dfTimeline <<-  data.table::fread(fileTimeline, header=TRUE, sep=as.character(input$txtTimelineFileSep))
+            dfTimeline <<-  read.table(fileTimeline, header=TRUE, sep=as.character(input$txtTimelineFileSep))
             
             if(!(all(as.integer(as.character(dfTimeline$layerID)) >= 1) & all(as.integer(as.character(dfTimeline$layerID)) <= (LAYERS+1)))){
                 progress <- shiny::Progress$new(session)
@@ -2995,7 +2995,7 @@ shinyServer(function(input, output, session) {
                         
                         #import the results (clu and modularity value)
                         resultFile <- paste0(input$txtProjectName,"_multimap_Multiplex_Physical.clu")
-                        wmemb_membership <- data.table::fread(resultFile, header=F, sep=" ")
+                        wmemb_membership <- read.table(resultFile, header=F, sep=" ")
                         if(file.exists(resultFile)) file.remove(resultFile)             
                         resultFile <- paste0(input$txtProjectName,"_multimap_Multiplex_Physical.tree") 
                         wtcod <- as.numeric(strsplit(readLines(resultFile, n=1), " ")[[1]][4])
@@ -3085,7 +3085,7 @@ shinyServer(function(input, output, session) {
 
                             #import the results (clu and modularity value)
                             resultFile <- paste0(input$txtProjectName,"_multimap_Multiplex_Physical.clu")
-                            wmemb_membership <- data.table::fread(resultFile, header=F, sep=" ")
+                            wmemb_membership <- read.table(resultFile, header=F, sep=" ")
                             if(file.exists(resultFile)) file.remove(resultFile)             
                             resultFile <- paste0(input$txtProjectName,"_multimap_Multiplex_Physical.tree") 
                             wtcod.tmp <- as.numeric(strsplit(readLines(resultFile, n=1), " ")[[1]][4])
@@ -5416,7 +5416,7 @@ shinyServer(function(input, output, session) {
                     if(input$txtGEOGRAPHIC_LAT_MIN != "" && input$txtGEOGRAPHIC_LAT_MAX != "" && input$txtGEOGRAPHIC_LONG_MIN != "" && input$txtGEOGRAPHIC_LONG_MAX != ""){
                         #we are sure here that each layout is specified correctly
                         for(l in 1:LAYERS){
-                            layerTable <- data.table::fread(layerLayoutFile[[l]][1], header=T, sep=as.character(input$txtEdgeListFileSep))
+                            layerTable <- read.table(layerLayoutFile[[l]][1], header=T, sep=as.character(input$txtEdgeListFileSep))
                             
                             if(input$chkEdgeListLabel) layerTable$nodeID <- 1:nrow(layerTable)
                             
@@ -8421,7 +8421,7 @@ shinyServer(function(input, output, session) {
                         Sys.sleep(10)
                         return(NULL)
                     }
-                    externalNodeColorTable <<- data.table::fread(input$nodecolor_file$datapath, sep=as.character(input$txtNodeColorFileSep), header=T)
+                    externalNodeColorTable <<- read.table(input$nodecolor_file$datapath, sep=as.character(input$txtNodeColorFileSep), header=T)
 
                     if(!"nodeID" %in% colnames(externalNodeColorTable)){
                         progress2 <- shiny::Progress$new(session)
@@ -8490,7 +8490,7 @@ shinyServer(function(input, output, session) {
                         Sys.sleep(10)
                         return(NULL)
                     }
-                    externalEdgeColorTable <<- data.table::fread(input$edgecolor_file$datapath, sep=as.character(input$txtEdgeColorFileSep), header=T)
+                    externalEdgeColorTable <<- read.table(input$edgecolor_file$datapath, sep=as.character(input$txtEdgeColorFileSep), header=T)
 
                     if(!"nodeID.from" %in% colnames(externalEdgeColorTable)){
                         progress2 <- shiny::Progress$new(session)
