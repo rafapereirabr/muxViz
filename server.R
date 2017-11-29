@@ -1498,7 +1498,7 @@ shinyServer(function(input, output, session) {
             AdjMatrix <<- vector("list",LAYERS+1)
             
             #Adj_aggr <- matrix(0,ncol=Nodes,nrow=Nodes)
-            AdjMatrix[[LAYERS+1]] <<- matrix(0,ncol=Nodes,nrow=Nodes)
+            AdjMatrix[[LAYERS+1]] <<- Matrix::Matrix(0,ncol=Nodes,nrow=Nodes,sparse = T)
             
             for(l in 1:LAYERS){    
                 #account for the possibility of having layers with no intra-links
@@ -1621,7 +1621,7 @@ shinyServer(function(input, output, session) {
             #build heatmaps for matrix explorer
             
             #multilayer
-            mux.df <- as.data.frame(t(as.matrix(SupraAdjacencyMatrix)))
+            mux.df <- as.data.frame(t(Matrix::Matrix(SupraAdjacencyMatrix, sparse = T)))
             colnames(mux.df) <- paste0(sort(rep(1:LAYERS, Nodes)), "-", rep(nodesLabel[[1]], LAYERS))
             rownames(mux.df) <- paste0(sort(rep(1:LAYERS, Nodes)), "-", rep(nodesLabel[[1]], LAYERS))
 
@@ -1640,7 +1640,7 @@ shinyServer(function(input, output, session) {
             })
 
             #aggregate
-            agg.df <- as.data.frame(t(as.matrix(AdjMatrix[[LAYERS+1]])))
+            agg.df <- as.data.frame(t(Matrix::Matrix(AdjMatrix[[LAYERS+1]], sparse = T)))
             colnames(agg.df) <- nodesLabel[[1]]
             rownames(agg.df) <- nodesLabel[[1]]
 
@@ -2100,7 +2100,7 @@ shinyServer(function(input, output, session) {
                             }
                             
                             #setup the layout for g.multi by merging the layout of each layer, in order
-                            layout.multi <<- matrix(0, ncol=3, nrow=Nodes*LAYERS)
+                            layout.multi <<- Matrix::Matrix(0, ncol=3, nrow=Nodes*LAYERS, sparse = T)
 
                             for(l in 1:LAYERS){
                                 layout.multi[ (1 + (l-1)*Nodes):(l*Nodes), 1] <<- layouts[[l]][, 1]
@@ -2273,7 +2273,7 @@ shinyServer(function(input, output, session) {
 
                     #print(motif_name)
                     #print(t(matrix(as.numeric(strsplit(motif_name,"")[[1]]),ncol=as.numeric(input$selMotifSize))))
-                    g.motif <- graph.adjacency( t(matrix(as.numeric(strsplit(motif_name,"")[[1]]),ncol=as.numeric(input$selMotifSize))) )
+                    g.motif <- graph.adjacency( t(Matrix::Matrix(as.numeric(strsplit(motif_name,"")[[1]]),ncol=as.numeric(input$selMotifSize), sparse = T)) )
                     E(g.motif)$color <- 1
                     g.motif <- simplify(g.motif,edge.attr.comb=list(color="sum"))
                     g.layout <- layout.circle(g.motif)
@@ -2465,7 +2465,7 @@ shinyServer(function(input, output, session) {
                         rgb.palette <- colorRampPalette(brewer.pal(brewer.pal.info$maxcolors[row.names(brewer.pal.info)==input$selAssortativityTypeColorPalette],input$selAssortativityTypeColorPalette))
                         
                         png(outfilem, width=550, height=400)
-                        myImagePlot(as.matrix(AdjMatrix[[l]]), xLabels=rep("",Nodes), yLabels=rep("",Nodes), ColorRamp=rgb.palette(120)) #,title=c("")
+                        myImagePlot(Matrix::Matrix(AdjMatrix[[l]], sparse = T), xLabels=rep("",Nodes), yLabels=rep("",Nodes), ColorRamp=rgb.palette(120)) #,title=c("")
                         #levelplot(AdjMatrix[[l]], main="", xlab="", ylab="", col.regions=rgb.palette(120), cuts=100, at=seq(0,1,0.01))
                         dev.off()
                     }
@@ -2489,11 +2489,11 @@ shinyServer(function(input, output, session) {
         
                     avgGlobalOverlappingMatrix <<- GetAverageGlobalOverlappingMatrix(SupraAdjacencyMatrix,LAYERS,Nodes)
 
-                    avgGlobalOverlappingMatrix.df <<- as.data.frame(t(as.matrix(avgGlobalOverlappingMatrix)))
+                    avgGlobalOverlappingMatrix.df <<- as.data.frame(t(Matrix::Matrix(avgGlobalOverlappingMatrix, sparse=T)))
                     colnames(avgGlobalOverlappingMatrix.df) <<- Layer
                     rownames(avgGlobalOverlappingMatrix.df) <<- Layer
 
-                    overlapMatrix <- data.frame(as.matrix(avgGlobalOverlappingMatrix))
+                    overlapMatrix <- data.frame(Matrix::Matrix(avgGlobalOverlappingMatrix, sparse = T))
                     colnames(overlapMatrix) <- Layer
                     overlapMatrix <- cbind(data.frame(Layer),overlapMatrix)
                     listOverlap <<- overlapMatrix    
@@ -2508,11 +2508,11 @@ shinyServer(function(input, output, session) {
                     avgGlobalNodeOverlappingMatrix <<- GetAverageGlobalNodeOverlappingMatrix(SupraAdjacencyMatrix,LAYERS,Nodes)
     
 
-                    avgGlobalNodeOverlappingMatrix.df <<- as.data.frame(t(as.matrix(avgGlobalNodeOverlappingMatrix)))
+                    avgGlobalNodeOverlappingMatrix.df <<- as.data.frame(t(Matrix::Matrix(avgGlobalNodeOverlappingMatrix, sparse = T)))
                     colnames(avgGlobalNodeOverlappingMatrix.df) <<- Layer
                     rownames(avgGlobalNodeOverlappingMatrix.df) <<- Layer
     
-                    overlapMatrix2 <- data.frame(as.matrix(avgGlobalNodeOverlappingMatrix))
+                    overlapMatrix2 <- data.frame(Matrix::Matrix(avgGlobalNodeOverlappingMatrix, sparse = T))
                     colnames(overlapMatrix2) <- Layer
                     overlapMatrix2 <- cbind(data.frame(Layer),overlapMatrix2)
                     listNodeOverlap <<- overlapMatrix2    
@@ -2527,11 +2527,11 @@ shinyServer(function(input, output, session) {
                     interPearson <- GetInterAssortativityTensor(SupraAdjacencyMatrix,LAYERS,Nodes,
                                                                                         DIRECTED,input$selAssortativityType)$InterPearson
     
-                    interPearson.df <<- as.data.frame(t(as.matrix(interPearson)))
+                    interPearson.df <<- as.data.frame(t(Matrix::Matrix(interPearson, sparse = T)))
                     colnames(interPearson.df) <<- Layer
                     rownames(interPearson.df) <<- Layer
     
-                    interPearson <- data.frame(as.matrix(interPearson))
+                    interPearson <- data.frame(Matrix::Matrix(interPearson, sparse = T))
                     colnames(interPearson) <- Layer
                     interPearson <- cbind(data.frame(Layer),interPearson)
                     listInterPearson <<- interPearson                    
@@ -2547,11 +2547,11 @@ shinyServer(function(input, output, session) {
                     interSpearman <- GetInterAssortativityTensor(SupraAdjacencyMatrix,LAYERS,Nodes,
                                                                                     DIRECTED,input$selAssortativityType)$InterSpearman
     
-                    interSpearman.df <<- as.data.frame(t(as.matrix(interSpearman)))
+                    interSpearman.df <<- as.data.frame(t(Matrix::Matrix(interSpearman, sparse = T)))
                     colnames(interSpearman.df) <<- Layer
                     rownames(interSpearman.df) <<- Layer
                     
-                    interSpearman <- data.frame(as.matrix(interSpearman))
+                    interSpearman <- data.frame(Matrix::Matrix(interSpearman, sparse = T))
                     colnames(interSpearman) <- Layer
                     interSpearman <- cbind(data.frame(Layer),interSpearman)
                     listInterSpearman <<- interSpearman                    
@@ -3354,7 +3354,7 @@ shinyServer(function(input, output, session) {
                 lapply(1:LAYERS, function(x) memb.chord <<- c(memb.chord, listCommunities[[x]]$Community))
                 g.mod.chord <- getCommunityNetwork(g.chord, memb.chord)                
     
-                A.mod.tmp <- as.matrix(get.adjacency(g.mod.chord, attr="weight"))
+                A.mod.tmp <- Matrix::Matrix(get.adjacency(g.mod.chord, attr="weight"), sparse = T)
 
                 colorPalette <- colorRampPalette(brewer.pal(brewer.pal.info$maxcolors[row.names(brewer.pal.info)==input$selCommunityHeatmapColorPalette],input$selCommunityHeatmapColorPalette))(length(V(g.mod.chord))+1)
 
@@ -3510,7 +3510,7 @@ shinyServer(function(input, output, session) {
                     sumComponents[[2]] <- data.frame(Layer = "Aggr")
                     
                     wmemb_membership <- GetConnectedComponents(SupraAdjacencyMatrix,LAYERS,Nodes)    
-                    wmemb_membership <- t(matrix(rep(wmemb_membership,LAYERS), nrow=LAYERS, ncol=Nodes, byrow=T))
+                    wmemb_membership <- t(Matrix::Matrix(rep(wmemb_membership,LAYERS), nrow=LAYERS, ncol=Nodes, byrow=T, sparse = T))
                         
                     maxCom <- max(wmemb_membership)
                     numComms <- maxCom
@@ -3833,7 +3833,7 @@ shinyServer(function(input, output, session) {
                     sumTriads[[2]] <- data.frame(Layer = "Aggr")
                     
                     wclus <- c(GetLocalClustering(SupraAdjacencyMatrix,LAYERS,Nodes))
-                    wclus <- t(matrix(rep(wclus,LAYERS), nrow=LAYERS, ncol=Nodes, byrow=T))
+                    wclus <- t(Matrix::Matrix(rep(wclus,LAYERS), nrow=LAYERS, ncol=Nodes, byrow=T, sparse = T))
                         
                     maxClus <- max(wclus)
                     numTriads <- GetGlobalNumberTriangles(SupraAdjacencyMatrix,Layers,Nodes)
@@ -5198,7 +5198,7 @@ shinyServer(function(input, output, session) {
                 
             colnames(distanceMatrix) <- Layer
             rownames(distanceMatrix) <- Layer
-            distanceMatrix.df <- as.data.frame(as.matrix(distanceMatrix))
+            distanceMatrix.df <- as.data.frame(Matrix::Matrix(distanceMatrix, sparse = T))
                 
             d3heatmap(
                 distanceMatrix.df,
@@ -8764,7 +8764,7 @@ shinyServer(function(input, output, session) {
             plotFeatures <- max(FeaturesDataFrame$feature)
         
             #build the correlation matrix for the measures
-            correlationMatrix <- matrix(0,nrow=plotFeatures,ncol=plotFeatures)
+            correlationMatrix <- Matrix::Matrix(0,nrow=plotFeatures,ncol=plotFeatures, sparse = T)
                 
             for(l in 1:plotFeatures){
                 thisCluster <- FeaturesDataFrame$cluster[FeaturesDataFrame$feature==l]
@@ -8849,7 +8849,7 @@ shinyServer(function(input, output, session) {
             #plot the single-features
             if(nrow(FeaturesDataFrame)>0){
                 image.plot(legend.only=TRUE, 1, 1:length(colorPalette),
-                    z=matrix(data=1:length(colorPalette), ncol=length(colorPalette),nrow=1),
+                    z=Matrix::Matrix(data=1:length(colorPalette), ncol=length(colorPalette),nrow=1, sparse = T),
                     col=colorPalette,
                     xlab="",ylab="", xaxt="n", horizontal=T, legend.mar=4.1, cex=2*myFontSize)   
 
