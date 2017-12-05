@@ -64,13 +64,26 @@ reshapeR <- function(A, n, m){
     return( A )
 }
 
-diagR <- function(x, n, offset=0){ 
-    #cannot call this function just "diag", because it's an R builtin command
-    #return a matrix with elements on a diagonal specified by offset (0=main diagonal)
-    M <- zeros(n,n)
-    M[row(M)+offset == col(M)] <- x
-    return(M)
+zeros <- function(n,m){
+  #return a matrix full of zeros
+  #return( Matrix::Matrix(Matrix::kronecker( cbind(rep(0,n)), rbind(rep(1,m)), sparse=T), sparse=T) )
+  return(Matrix::Matrix(0, n, m, sparse=T))
 }
+
+ones <- function(n,m){
+  #return a matrix full of ones
+  #return( Matrix::Matrix(Matrix::kronecker( cbind(rep(1,n)), rbind(rep(1,m)) )) )
+  return(Matrix::Matrix(1, n, m, sparse=T))
+}
+
+diagR <- function(x, n, offset=0){ 
+  #cannot call this function just "diag", because it's an R builtin command
+  #return a matrix with elements on a diagonal specified by offset (0=main diagonal)
+  M <- zeros(n,n)
+  M[which(row(M)+offset == col(M))] <- x
+  return(M)
+}
+
 
 traceR <- function(A){
     #return the trace of a matrix
