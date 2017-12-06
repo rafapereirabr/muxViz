@@ -4,3 +4,5 @@
 # Example code in package build process
 *-Ex.R
 *.rel
+data/gtfs_rio_mode_2017mix_no-roads/config_2017mix_no-roads_list.txt
+*.txt
