@@ -1,4 +1,5 @@
 library(Matrix)
+library(RSpectra)
 
 ####################################################
 # MuxNetLib: Library for Multilayer Network Analysis in muxViz
@@ -283,43 +284,37 @@ SolveEigenvalueProblem <- function(Matrix){
 
 
 GetLargestEigenv <- function(Matrix){
-    #we must distinguish between symmetric and nonsymmetric matrices to have correct results
-    tmp <- eigen(Matrix)
-    QMatrix <- tmp$vectors
-    LMatrix <- tmp$values
-
-    k <- which.max(abs(LMatrix))
-    LMatrix <- LMatrix[k]
-    QMatrix <- cbind(QMatrix[,k])   #return column vector
-
-    #The result of some computation might return complex numbers with 0 imaginary part
-    #If this is the case, we fix it, otherwise a warning is rised
-    if( all(Im(QMatrix)==0) ){
-        QMatrix <- Re(QMatrix)
-    }else{
-        cat("Warning! Complex numbers in the leading eigenvector.\n")
-    }
-
-    if( all(Im(LMatrix)==0) ){
-        LMatrix <- Re(LMatrix)
-    }else{
-        cat("Warning! Complex numbers in the leading eigenvalue.\n")
-    }
-
-    #check if the eigenvector has all negative components.. in that case we change the sign
-    #first, set to zero everything that is so small that can create problems even if it compatible with zero
-    QMatrix[which(QMatrix>-1e-12 & QMatrix<1e-12)] <- 0
-    #now verify that all components are negative and change sign
-    if( all( QMatrix[QMatrix!=0] < 0 ) ){
-        QMatrix <- -QMatrix
-    }
-    
-
-    return( list(QMatrix=QMatrix, LMatrix=LMatrix) )
-
-    ##remind to return a column vector result.. check always that returned result is compatible with original octave result
+  #we must distinguish between symmetric and nonsymmetric matrices to have correct results
+  #still to do for further improvements
+  tmp <- RSpectra::eigs(Matrix, 1, which="LM")
+  
+  #The result of some computation might return complex numbers with 0 imaginary part
+  #If this is the case, we fix it, otherwise a warning is rised
+  if( all(Im(tmp$vectors)==0) ){
+    tmp$vectors <- Re(tmp$vectors)
+  }else{
+    cat("Warning! Complex numbers in the leading eigenvector.\n")
+  }
+  
+  if( all(Im(tmp$values)==0) ){
+    tmp$values <- Re(tmp$values)
+  }else{
+    cat("Warning! Complex numbers in the leading eigenvalue.\n")
+  }
+  
+  #check if the eigenvector has all negative components.. in that case we change the sign
+  #first, set to zero everything that is so small that can create problems even if it compatible with zero
+  tmp$vectors[which(tmp$vectors>-1e-12 & tmp$vectors<1e-12)] <- 0
+  #now verify that all components are negative and change sign
+  if( all( tmp$vectors[which(tmp$vectors!=0)] < 0 ) ){
+    tmp$vectors <- -tmp$vectors
+  }
+  
+  
+  return( list(QMatrix=tmp$vectors, LMatrix=tmp$values) )
+  
+  ##remind to return a column vector result.. check always that returned result is compatible with original octave result
 }
-
 binarizeMatrix <- function(A){
   #A is assumed to be sparse
   A[which(A != 0)] <- 1
